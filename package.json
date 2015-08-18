@@ -1,0 +1,22 @@
+{
+  "name": "property-based-testing",
+  "version": "1.0.0",
+  "description": "A presentation about property based testing",
+  "author": "Sune Simonsen",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run build && serve build",
+    "build": "unexpected-presentation --require ./setup.js presentation.md",
+    "publish": "npm run build && gh-pages -t -d build"
+  },
+  "devDependencies": {
+    "chance-generators": "2.0.1",
+    "gh-pages": "0.12.0",
+    "quicksort.js": "0.1.5",
+    "serve": "1.4.0",
+    "unexpected": "10.20.0",
+    "unexpected-check": "1.12.0",
+    "unexpected-presentation": "2.2.0"
+  }
+}
