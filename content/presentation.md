@@ -110,9 +110,11 @@ isSorted(sort(a)) = true
 var quicksort = require('quicksort.js');
 
 function isSorted (array) {
-  return array.every((x, i) => (
-    array.slice(i).every(y => x <= y)
-  ))
+  return array.every(function (x, i) {
+    return array.slice(i).every(function (y) {
+      return x <= y
+    })
+  })
 }
 ```
 
@@ -200,26 +202,6 @@ same order they where inserted.
 
 ---
 
-```js
-function Queue () {
-  this.data = []
-}
-
-Queue.prototype.add = function (item) {
-  this.data.push(item)
-}
-
-Queue.prototype.remove = function () {
-  return this.data.shift()
-}
-
-Queue.prototype.isEmpty = function () {
-  return this.data.length === 0
-}
-```
-
----
-
 Let's generate some operations:
 
 ```js
@@ -234,14 +216,99 @@ var removeOperation = g.shape({
 
 var operations = g.n(
   g.pick([addOperation, removeOperation]),
-  g.natural( { max: 30 })
+  g.natural({ max: 30 })
 )
 ```
 
 ---
 
+This will generate arrays with the following structure:
+
+```js#evaluate:false
+[
+  { type: 'remove' },
+  { type: 'remove' },
+  { type: 'add', value: -1331529414344704 },
+  { type: 'remove' },
+  { type: 'remove' },
+  { type: 'remove' },
+  { type: 'add', value: -4654237011148800 },
+  { type: 'remove' },
+  { type: 'add', value: 3344884333281280 },
+  { type: 'remove' },
+  { type: 'add', value: 1939033726910464 }
+]
+```
+
+---
+
+```js
+function execute(queue, operations) {
+  var added = [], removed = []
+  operations.forEach(function (operation) {
+    if (operation.type === 'add') {
+      added.push(operation.value)
+      queue.enq(operation.value)
+    } else if (!queue.isEmpty()) {
+      removed.push(queue.deq())
+    }
+  })
+
+  return { added: added, removed: removed }
+}
+```
+
+---
+
+```js
+var Queue = require('queuejs');
+
+expect(function (operations) {
+  var queue = new Queue()
+  var simulation = execute(queue, operations)
+  expect(
+    simulation.removed,
+    'to equal',
+    simulation.added.slice(0, simulation.removed.length)
+  )
+}, 'to be valid for all', operations)
+```
+
+---
+
+Reuse generated operations:
+
+```js
+expect(function (operations) {
+  var queue = new Queue()
+  operations.forEach(function (operation) {
+    var currentSize = queue.size()
+    if (operation.type === 'add') {
+      queue.enq(operation.value)
+      expect(queue.size(), 'to equal', currentSize + 1)
+    } else if (!queue.isEmpty()) {
+      queue.deq()
+      expect(queue.size(), 'to equal', currentSize - 1)
+    }
+  })
+}, 'to be valid for all', operations)
+```
+
+===
+
+## Real world example
+#### Testing menu positioning
+
+---
+
 ```js
 
+```
+
+---
+
+```output
+sdf
 ```
 
 ===

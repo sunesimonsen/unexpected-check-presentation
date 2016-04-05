@@ -30,6 +30,7 @@
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "mustache": "~0.7.2",
+    "queuejs": "0.1.0",
     "quicksort.js": "0.1.5",
     "sinon": "1.16.1",
     "socket.io": "~0.9.16",
