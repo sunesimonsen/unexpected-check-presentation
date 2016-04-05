@@ -102,6 +102,8 @@ queues - items are retrieved in the same order they are inserted
 
 ## Testing a sorting function
 
+<img src="/content/sorting.jpg">
+
 isSorted(sort(a)) = true
 
 ---
@@ -197,8 +199,11 @@ Note: The explanation: build-in search sort alphabetically based on string conve
 
 ## Testing a queue
 
+<img src="/content/queue.jpg">
+
 While adding and removing items, the items should always be retrieved in the
 same order they where inserted.
+
 
 ---
 
@@ -269,7 +274,7 @@ expect(function (operations) {
   expect(
     simulation.removed,
     'to equal',
-    simulation.added.slice(0, simulation.removed.length)
+    simulation.added.slice(0, simulation.added.length - queue.size())
   )
 }, 'to be valid for all', operations)
 ```
@@ -288,7 +293,7 @@ expect(function (operations) {
       expect(queue.size(), 'to equal', currentSize + 1)
     } else if (!queue.isEmpty()) {
       queue.deq()
-      expect(queue.size(), 'to equal', currentSize - 1)
+      expect(queue.size(), 'to equal', currentSize + 1)
     }
   })
 }, 'to be valid for all', operations)
@@ -299,17 +304,17 @@ expect(function (operations) {
 ## Real world example
 #### Testing menu positioning
 
+Note: maybe a drawing
+
+===
+
+## Error shrinking
+
+<img src="/content/ShrinkingSam.jpg">
+
 ---
 
-```js
 
-```
-
----
-
-```output
-sdf
-```
 
 ===
 
