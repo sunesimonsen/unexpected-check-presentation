@@ -308,13 +308,43 @@ Note: maybe a drawing
 
 ===
 
-## Error shrinking
+## Input shrinking
 
 <img src="/content/ShrinkingSam.jpg">
 
 ---
 
+```js
+var arrayEqual = require('array-equal')
 
+function containsSubArray(parent, child) {
+  return parent.some(function (v, i) {
+    return arrayEqual(parent.slice(i, i + child.length), child)
+  })
+}
+```
+
+Note: can you spot the error
+
+---
+
+```js
+var arrays = g.n(g.natural({ max: 100 }), g.natural({ max: 50 }))
+
+expect(function (parent, child) {
+  expect(
+    containsSubArray, 'when called with', [parent, child],
+    'to be',
+    parent.toString().indexOf(child.toString()) > -1
+  )
+}, 'to be valid for all', arrays, arrays)
+```
+
+---
+
+```output
+sdf
+```
 
 ===
 
