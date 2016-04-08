@@ -45,8 +45,8 @@ var g = require('chance-generators')(42)
 
 var strings = g.string({ length: g.natural({ max: 50 })})
 
-expect(function (s) {
-  expect(decodeURIComponent(encodeURIComponent(s)), 'to equal', s)
+expect((string) => {
+  expect(decodeURIComponent(encodeURIComponent(string)), 'to equal', string)
 }, 'to be valid for all', strings)
 ```
 
@@ -186,11 +186,10 @@ We get the following error:
 ```output
 Ran 47 iterations and found 20 errors
 counterexample:
- 
-  
-Generated input: [ -58, -89 ]
- 
-expected [ -58, -89 ] to be sorted
+
+  Generated input: [ -58, -89 ]
+
+  expected [ -58, -89 ] to be sorted
 ```
 
 Note: The explanation: build-in search sort alphabetically based on string conversion.
@@ -293,7 +292,7 @@ expect(function (operations) {
       expect(queue.size(), 'to equal', currentSize + 1)
     } else if (!queue.isEmpty()) {
       queue.deq()
-      expect(queue.size(), 'to equal', currentSize + 1)
+      expect(queue.size(), 'to equal', currentSize - 1)
     }
   })
 }, 'to be valid for all', operations)
@@ -317,9 +316,9 @@ Note: maybe a drawing
 ```js
 var arrayEqual = require('array-equal')
 
-function containsSubArray(parent, child) {
-  return parent.some(function (v, i) {
-    return arrayEqual(parent.slice(i, i + child.length), child)
+function containsSubArray(array, subArray) {
+  return array.some(function (v, i) {
+    return arrayEqual(array.slice(i, i + subArray.length), subArray)
   })
 }
 ```
@@ -329,22 +328,79 @@ Note: can you spot the error
 ---
 
 ```js
-var arrays = g.n(g.natural({ max: 100 }), g.natural({ max: 50 }))
+var maxLength = g.natural({ max: 100 })
+var arrays = g.n(g.natural({ max: 100 }), maxLength)
+var offset = maxLength
+var length = maxLength
 
-expect(function (parent, child) {
+expect(function (array, offset, length) {
+  var subArray = array.slice(offset, offset + length)
   expect(
-    containsSubArray, 'when called with', [parent, child],
-    'to be',
-    parent.toString().indexOf(child.toString()) > -1
+    containsSubArray, 'when called with', [array, subArray],
+    'to be true'
   )
-}, 'to be valid for all', arrays, arrays)
+}, 'to be valid for all', arrays, offset, length)
 ```
 
 ---
 
 ```output
-sdf
+Ran 19 iterations and found 4 errors
+counterexample:
+
+  Generated input: [], 0, 0
+
+  expected
+  function containsSubArray(array, subArray) {
+    return array.some(function (v, i) {
+      return arrayEqual(array.slice(i, i + subArray.length), subArray);
+    });
+  }
+  when called with [], [] to be true
+    expected false to be true
 ```
+
+---
+
+The assertion find an error after 80 iterations and shrinks it to the optimal
+output in 5 iterations:
+
+```
+[] 22 19
+[] 1 9
+[] 1 7
+[] 1 3
+[] 0 0
+```
+
+---
+
+Shrinking a number:
+
+```js#evaluate:false
+var numbers = g.integer({ min: -100, max: 100 })
+
+numbers.shrink(22)
+// will return: g.natural({ min: -100,  max: 22 }) 
+
+numbers.shrink(-33) 
+// will return: g.natural({ min: -33, max: 100 }) 
+```
+
+The generated values will converge towards zero.
+
+---
+
+Shrinking an array: 
+
+```js#evaluate:false
+var arrays = g.n(g.natural({ max: 100 }), g.natural({ min: 2, max: 100 }))
+
+arrays.shrink([79, 25, 42, 94, 27])
+// will return: g.pick([79, 25, 42, 94, 27], g.natural({ min: 2, max: 5 }) 
+```
+
+The generated arrays will converge towards the smallest possible array.
 
 ===
 
