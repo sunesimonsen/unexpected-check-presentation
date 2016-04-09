@@ -46,7 +46,11 @@ var g = require('chance-generators')(42)
 var strings = g.string({ length: g.natural({ max: 50 })})
 
 expect((string) => {
-  expect(decodeURIComponent(encodeURIComponent(string)), 'to equal', string)
+  expect(
+    decodeURIComponent(encodeURIComponent(string)),
+    'to equal',
+    string
+  )
 }, 'to be valid for all', strings)
 ```
 
@@ -112,10 +116,8 @@ isSorted(sort(a)) = true
 var quicksort = require('quicksort.js');
 
 function isSorted (array) {
-  return array.every(function (x, i) {
-    return array.slice(i).every(function (y) {
-      return x <= y
-    })
+  return array.every((x, i) => {
+    return array.slice(i).every((y) => x <= y)
   })
 }
 ```
@@ -125,7 +127,7 @@ function isSorted (array) {
 Let's make a assertion for checking that arrays are sorted:
 
 ```js
-expect.addAssertion('to be sorted', function (expect, subject) {
+expect.addAssertion('to be sorted', (expect, subject) => {
   expect(isSorted(subject), 'to be true')
 })
 ```
@@ -137,7 +139,7 @@ Quicksort sorts arrays of strings correctly
 ```js
 var stringArrays = g.n(g.string, g.natural({ max: 10 }))
 
-expect(function (a) {
+expect((a) => {
   expect(quicksort.asc(a), 'to be sorted')
 }, 'to be valid for all', stringArrays)
 ```
@@ -156,7 +158,7 @@ var integerArrays = g.n(
   g.natural({ max: 20 })
 )
 
-expect(function (a) {
+expect((a) => {
   expect(quicksort.asc(a), 'to be sorted')
 }, 'to be valid for all', integerArrays)
 ```
@@ -166,7 +168,7 @@ expect(function (a) {
 Let's try the same with the build-in sorting function:
 
 ```js
-expect(function (a) {
+expect((a) => {
   expect(a.sort(), 'to be sorted')
 }, 'to be valid for all', integerArrays)
 ```
@@ -249,7 +251,7 @@ This will generate arrays with the following structure:
 ```js
 function execute(queue, operations) {
   var added = [], removed = []
-  operations.forEach(function (operation) {
+  operations.forEach((operation) => {
     if (operation.type === 'add') {
       added.push(operation.value)
       queue.enq(operation.value)
@@ -267,7 +269,7 @@ function execute(queue, operations) {
 ```js
 var Queue = require('queuejs');
 
-expect(function (operations) {
+expect((operations) => {
   var queue = new Queue()
   var simulation = execute(queue, operations)
   expect(
@@ -285,7 +287,7 @@ Reuse generated operations:
 ```js
 expect(function (operations) {
   var queue = new Queue()
-  operations.forEach(function (operation) {
+  operations.forEach((operation) => {
     var currentSize = queue.size()
     if (operation.type === 'add') {
       queue.enq(operation.value)
@@ -317,7 +319,7 @@ Note: maybe a drawing
 var arrayEqual = require('array-equal')
 
 function containsSubArray(array, subArray) {
-  return array.some(function (v, i) {
+  return array.some((v, i) => {
     return arrayEqual(array.slice(i, i + subArray.length), subArray)
   })
 }
@@ -333,7 +335,7 @@ var arrays = g.n(g.natural({ max: 100 }), maxLength)
 var offset = maxLength
 var length = maxLength
 
-expect(function (array, offset, length) {
+expect((array, offset, length) => {
   var subArray = array.slice(offset, offset + length)
   expect(
     containsSubArray, 'when called with', [array, subArray],
@@ -352,7 +354,7 @@ counterexample:
 
   expected
   function containsSubArray(array, subArray) {
-    return array.some(function (v, i) {
+    return array.some((v, i) => {
       return arrayEqual(array.slice(i, i + subArray.length), subArray);
     });
   }
@@ -362,14 +364,13 @@ counterexample:
 
 ---
 
-The assertion find an error after 80 iterations and shrinks it to the optimal
-output in 5 iterations:
+The assertion find an error after 15 iterations and shrinks it to the optimal
+output in 4 iterations:
 
 ```
-[] 22 19
-[] 1 9
-[] 1 7
-[] 1 3
+[] 53 19
+[] 45 4
+[] 43 4
 [] 0 0
 ```
 
