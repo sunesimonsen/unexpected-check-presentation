@@ -39,12 +39,23 @@ expect(encodeURIComponent('~&?'), 'to equal', '~%26%3F')
 
 decodeURIComponent(encodeURIComponent(s)) = s
 
+---
+
+Let's start out by generating some strings:
+
 ```js
 expect.use(require('unexpected-check'))
-var g = require('chance-generators')(42)
+const Generators = require('chance-generators')
 
-var strings = g.string({ length: g.natural({ max: 50 })})
+let { natural, string } = new Generators(42)
+let strings = string({ length: natural({ max: 50 })})
+```
 
+Note: we use a seeded random as it is important that test are reproducible.
+
+---
+
+```js
 expect((string) => {
   expect(
     decodeURIComponent(encodeURIComponent(string)),
@@ -54,10 +65,8 @@ expect((string) => {
 }, 'to be valid for all', strings)
 ```
 
-Note: 
-* we use a seeded random as it is important that test are reproducible.
-* it is tempting to just rely property based testing, but I would always
-  complement it with sanity checks.
+Note: it is tempting to just rely property based testing, but I would always
+complement it with sanity checks.
 
 ===
 
@@ -113,7 +122,7 @@ isSorted(sort(a)) = true
 ---
 
 ```js
-var quicksort = require('quicksort.js');
+const quicksort = require('quicksort.js');
 
 function isSorted (array) {
   return array.every((x, i) => {
@@ -137,10 +146,11 @@ expect.addAssertion('to be sorted', (expect, subject) => {
 Quicksort sorts arrays of strings correctly
 
 ```js
-var stringArrays = g.n(g.string, g.natural({ max: 10 }))
+let { n, natural, string } = new Generators(42)
+let stringArrays = n(string, natural({ max: 10 }))
 
-expect((a) => {
-  expect(quicksort.asc(a), 'to be sorted')
+expect((array) => {
+  expect(quicksort.asc(array), 'to be sorted')
 }, 'to be valid for all', stringArrays)
 ```
 
@@ -153,13 +163,15 @@ as in your testing code.
 ...and interger arrays:
 
 ```js
-var integerArrays = g.n(
-  g.integer({ min: -100, max: 100 }),
-  g.natural({ max: 20 })
+let { integer, n, natural } = new Generators(42)
+
+let integerArrays = n(
+  integer({ min: -100, max: 100 }),
+  natural({ max: 20 })
 )
 
-expect((a) => {
-  expect(quicksort.asc(a), 'to be sorted')
+expect((array) => {
+  expect(quicksort.asc(array), 'to be sorted')
 }, 'to be valid for all', integerArrays)
 ```
 
@@ -168,8 +180,8 @@ expect((a) => {
 Let's try the same with the build-in sorting function:
 
 ```js
-expect((a) => {
-  expect(a.sort(), 'to be sorted')
+expect((array) => {
+  expect(array.sort(), 'to be sorted')
 }, 'to be valid for all', integerArrays)
 ```
 
@@ -186,12 +198,12 @@ Note: we can't even sort integers anymore, what is even happening?
 We get the following error:
 
 ```output
-Ran 47 iterations and found 20 errors
+Ran 61 iterations and found 20 errors
 counterexample:
 
-  Generated input: [ -58, -89 ]
+  Generated input: [ -68, -77 ]
 
-  expected [ -58, -89 ] to be sorted
+  expected [ -68, -77 ] to be sorted
 ```
 
 Note: The explanation: build-in search sort alphabetically based on string conversion.
@@ -211,18 +223,20 @@ same order they where inserted.
 Let's generate some operations:
 
 ```js
-var addOperation = g.shape({
+let { integer, n, natural, pickone, shape } = new Generators(42)
+
+const addOperation = shape({
   type: 'add',
-  value: g.integer
+  value: integer
 })
 
-var removeOperation = g.shape({
+const removeOperation = shape({
   type: 'remove'
 })
 
-var operations = g.n(
-  g.pick([addOperation, removeOperation]),
-  g.natural({ max: 30 })
+const operations = n(
+  pickone([addOperation, removeOperation]),
+  natural({ max: 30 })
 )
 ```
 
@@ -250,28 +264,28 @@ This will generate arrays with the following structure:
 
 ```js
 function execute(queue, operations) {
-  var added = [], removed = []
-  operations.forEach((operation) => {
-    if (operation.type === 'add') {
-      added.push(operation.value)
-      queue.enq(operation.value)
+  const added = [], removed = []
+  operations.forEach(({ type, value }) => {
+    if (type === 'add') {
+      added.push(value)
+      queue.enq(value)
     } else if (!queue.isEmpty()) {
       removed.push(queue.deq())
     }
   })
 
-  return { added: added, removed: removed }
+  return { added, removed }
 }
 ```
 
 ---
 
 ```js
-var Queue = require('queuejs');
+const Queue = require('queuejs');
 
 expect((operations) => {
-  var queue = new Queue()
-  var simulation = execute(queue, operations)
+  const queue = new Queue()
+  const simulation = execute(queue, operations)
   expect(
     simulation.removed,
     'to equal',
@@ -286,11 +300,11 @@ Reuse generated operations:
 
 ```js
 expect(function (operations) {
-  var queue = new Queue()
-  operations.forEach((operation) => {
-    var currentSize = queue.size()
-    if (operation.type === 'add') {
-      queue.enq(operation.value)
+  const queue = new Queue()
+  operations.forEach(({ type, value }) => {
+    const currentSize = queue.size()
+    if (type === 'add') {
+      queue.enq(value)
       expect(queue.size(), 'to equal', currentSize + 1)
     } else if (!queue.isEmpty()) {
       queue.deq()
@@ -316,12 +330,12 @@ Note: maybe a drawing
 ---
 
 ```js
-var arrayEqual = require('array-equal')
+const arrayEqual = require('array-equal')
 
 function containsSubArray(array, subArray) {
-  return array.some((v, i) => {
-    return arrayEqual(array.slice(i, i + subArray.length), subArray)
-  })
+  return array.some((v, i) => (
+    arrayEqual(array.slice(i, i + subArray.length), subArray)
+  ))
 }
 ```
 
@@ -330,13 +344,13 @@ Note: can you spot the error
 ---
 
 ```js
-var maxLength = g.natural({ max: 100 })
-var arrays = g.n(g.natural({ max: 100 }), maxLength)
-var offset = maxLength
-var length = maxLength
+let { integer, n, natural } = new Generators(314)
+const length = natural({ max: 100 })
+const arrays = n(integer, length)
+const offset = natural({ max: 100 })
 
 expect((array, offset, length) => {
-  var subArray = array.slice(offset, offset + length)
+  const subArray = array.slice(offset, offset + length)
   expect(
     containsSubArray, 'when called with', [array, subArray],
     'to be true'
@@ -347,14 +361,14 @@ expect((array, offset, length) => {
 ---
 
 ```output
-Ran 19 iterations and found 4 errors
+Ran 77 iterations and found 6 errors
 counterexample:
 
   Generated input: [], 0, 0
 
   expected
   function containsSubArray(array, subArray) {
-    return array.some((v, i) => {
+    return array.some(function (v, i) {
       return arrayEqual(array.slice(i, i + subArray.length), subArray);
     });
   }
@@ -364,13 +378,15 @@ counterexample:
 
 ---
 
-The assertion find an error after 15 iterations and shrinks it to the optimal
-output in 4 iterations:
+The assertion finds an error after 71 iterations and shrinks it to the optimal
+output in 6 iterations:
 
 ```
-[] 53 19
-[] 45 4
-[] 43 4
+[] 46 18
+[] 27 12
+[] 13 11
+[] 5 0
+[] 3 0
 [] 0 0
 ```
 
@@ -378,30 +394,47 @@ output in 4 iterations:
 
 Shrinking a number:
 
-```js#evaluate:false
-var numbers = g.integer({ min: -100, max: 100 })
+```js
+let { integer } = new Generators(42)
+const numbers = integer({ min: -100, max: 100 })
 
-numbers.shrink(22)
-// will return: g.natural({ min: -100,  max: 22 }) 
+let shrunkenGenerator = numbers.shrink(22)
+// will return: integer({ min: -100,  max: 22 }) 
+expect(shrunkenGenerator(), 'to be within', -100, 22)
 
-numbers.shrink(-33) 
-// will return: g.natural({ min: -33, max: 100 }) 
+let shrunkenGenerator = numbers.shrink(-33) 
+// will return: integer({ min: -33, max: 100 }) 
+expect(shrunkenGenerator(), 'to be within', -33, 100)
+
 ```
 
-The generated values will converge towards zero.
+The shrunken values will converge towards zero.
 
 ---
 
 Shrinking an array: 
 
-```js#evaluate:false
-var arrays = g.n(g.natural({ max: 100 }), g.natural({ min: 2, max: 100 }))
+```js
+let { n, natural } = new Generators(42)
+const arrays = n(natural({ max: 100 }), natural({ min: 2, max: 100 }))
 
-arrays.shrink([79, 25, 42, 94, 27])
-// will return: g.pick([79, 25, 42, 94, 27], g.natural({ min: 2, max: 5 }) 
+let shrunkenGenerator = arrays.shrink([79, 25, 42, 94, 27])
+// will return: pickset([79, 25, 42, 94, 27], natural({ min: 2, max: 5 }) 
+
+expect(shrunkenGenerator(), 'to equal', [ 94, 27, 79 ])
+expect(shrunkenGenerator(), 'to equal', [ 42, 79, 94, 25 ])
+expect(shrunkenGenerator(), 'to equal', [ 42, 27 ])
 ```
 
-The generated arrays will converge towards the smallest possible array.
+The shrunken arrays will converge towards the smallest possible array.
+
+===
+
+What will the future bring?
+
+<!-- .slide: data-background="#ff0000" -->
+
+<img src="/content/crystal-ball.jpg">
 
 ===
 
