@@ -85,7 +85,7 @@ of properties about your program.
 * encode/decode
 * add/remove
 
-Note: many mathematical function
+Note: many mathematical functions
 
 ---
 
