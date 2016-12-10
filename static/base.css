@@ -1,0 +1,249 @@
+h1 {
+    font-size: 2.0em;
+}
+
+h2 {
+    font-size: 1.6em;
+}
+
+h3 {
+    font-size: 1.3em;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h1, h2, h3, h4, p {
+    text-align: center;
+}
+
+small {
+    font-size: 0.5em;
+}
+
+aside {
+    display: none;
+}
+
+article {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+.background {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: opacity 400ms ease-in-out;
+    opacity: 0;
+}
+
+.background.visible {
+    opacity: 1;
+    transition: opacity 400ms ease-in-out;
+}
+
+.section {
+    width: 100vw;
+    font-size: 38px;
+}
+
+.slide {
+    box-sizing: border-box;
+    padding: 40px;
+    width: 1024px;
+    position: absolute;
+    display: none;
+}
+
+@keyframes slideInRight {
+  from {
+      transform: translate(-100vw, 0);
+      opacity: 0;
+  }
+
+  to {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+
+  to {
+      transform: translate(-50vw, 0);
+      opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+      transform: translate(100vw, 0);
+      opacity: 0;
+  }
+
+  to {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+
+  to {
+      transform: translate(50vw, 0);
+      opacity: 0;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+      transform: translate(0, 100vh);
+      opacity: 0;
+  }
+
+  to {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+}
+
+@keyframes slideOutUp {
+  from {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+
+  to {
+      transform: translate(0, 50vh);
+      opacity: 0;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+      transform: translate(0, -100vh);
+      opacity: 0;
+  }
+
+  to {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+
+  to {
+      transform: translate(0, -50vh);
+      opacity: 0;
+  }
+}
+.slide-out {
+    display: block;
+}
+
+.transition-right .slide-out > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideOutLeft;
+    opacity: 0;
+}
+
+.transition-left .slide-out > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideOutRight;
+    opacity: 0;
+}
+
+.transition-down .slide-out > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideOutUp;
+    opacity: 0;
+}
+
+.transition-up .slide-out > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideOutDown;
+    opacity: 0;
+}
+
+.slide[aria-selected="true"] {
+    display: block;
+}
+
+.transition-right .slide[aria-selected="true"] > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideInRight;
+}
+
+.transition-left .slide[aria-selected="true"] > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideInLeft;
+}
+
+.transition-up .slide[aria-selected="true"] > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideInUp;
+}
+
+.transition-down .slide[aria-selected="true"] > * {
+    animation-timing-function: cubic-bezier(0.26, 0.86, 0.44, 0.985);
+    animation-duration: 500ms;
+    animation-name: slideInDown;
+}
+
+section .output,
+section .code {
+    color: black;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 0.55em;
+    white-space: nowrap;
+    line-height: 1.45;
+    margin: 0.5em 0;
+    padding: 16px;
+    overflow-x: auto;
+    text-align: left;
+    max-height: 450px;
+}
+
+section .code {
+  background-color: #f7f7f7;
+}
+section .output {
+  background-color: #f3f3f3;
+}
+
+section .code + .output {
+    border-top: thin solid #ddd;
+    margin-top: -0.5em;
+}
