@@ -194,7 +194,7 @@ var presentation = {
     renderNotes: function (slide) {
         if (notesWindow) {
             var html = toArray(slide.querySelectorAll('aside')).map(function (aside) {
-                return '<p style="font-size: 20px; font-family: sans-serif">' + aside.innerHTML + '</p>'
+                return '<p>' + aside.innerHTML + '</p>'
             }).join('\n')
             notesWindow.document.body.innerHTML = html
         }
@@ -348,6 +348,8 @@ function onToggleNotes() {
             'Notes',
             'width=500,height=300'
         )
+        notesWindow.document.body.style.fontSize = '20px'
+        notesWindow.document.body.style.fontFamily = 'sans-serif'
 
         var slide = presentation.getCurrentSlide()
         presentation.renderNotes(slide)
