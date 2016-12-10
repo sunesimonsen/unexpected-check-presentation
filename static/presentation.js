@@ -5,6 +5,8 @@ function toArray (items) {
 var container = document.querySelector('article')
 var slides = toArray(document.querySelectorAll('.slide'))
 
+var notesWindow = null
+
 var backgrounds = {}
 slides.filter(function (slide) {
     return slide.hasAttribute('data-background')
@@ -189,13 +191,27 @@ var presentation = {
         this.render()
     },
 
+    renderNotes: function (slide) {
+        if (notesWindow) {
+            var html = toArray(slide.querySelectorAll('aside')).map(function (aside) {
+                return '<p style="font-size: 20px; font-family: sans-serif">' + aside.innerHTML + '</p>'
+            }).join('\n')
+            notesWindow.document.body.innerHTML = html
+        }
+    },
+
     render: function (rerender) {
+
         if (
             this.lastPosition.section !== this.position.section ||
             this.lastPosition.slide !== this.position.slide
         ) {
             var slide = this.getCurrentSlide()
             var lastSlide = this.getLastSlide()
+
+            if (!rerender) {
+                this.renderNotes(slide)
+            }
 
             if (!rerender && slide.id in backgrounds) {
                 backgrounds[slide.id].classList.add('visible')
@@ -262,7 +278,6 @@ function gotoCurrentHash () {
     }
 
     presentation.updatePosition(section, slide)
-    console.log(presentation.position, presentation.lastPosition)
 
     presentation.render()
 }
@@ -312,12 +327,35 @@ var keyHandlers = {
     37: onArrowLeft,
     38: onArrowUp,
     39: onArrowRight,
-    40: onArrowDown
+    40: onArrowDown,
+    83: onToggleNotes
 }
 
-document.addEventListener('keydown', function (e) {
+function keydownHandler(e) {
     if (!e.metaKey && !e.ctrlKey) {
         var handler = keyHandlers[e.keyCode]
         handler && handler(e)
     }
-})
+}
+
+function onToggleNotes() {
+    if (notesWindow) {
+        notesWindow.close()
+        notesWindow = null
+    } else {
+        notesWindow = window.open(
+            '',
+            'Notes',
+            'width=500,height=300'
+        )
+
+        var slide = presentation.getCurrentSlide()
+        presentation.renderNotes(slide)
+
+        setTimeout(function () {
+            notesWindow.document.addEventListener('keydown', keydownHandler)
+        }, 1000)
+    }
+}
+
+document.addEventListener('keydown', keydownHandler)

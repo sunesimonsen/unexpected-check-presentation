@@ -45,6 +45,7 @@ article {
     overflow: hidden;
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center center;
     transition: opacity 400ms ease-in-out;
     opacity: 0;
 }
