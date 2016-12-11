@@ -1,3 +1,4 @@
+/* global touchwipe */
 function toArray (items) {
     return Array.prototype.slice.call(items)
 }
@@ -320,6 +321,14 @@ function onEnd() {
     presentation.navigate('showLastSlide')
 }
 
+function onSwipeLeft() {
+    presentation.navigate('nextSlide')
+}
+
+function onSwipeRight() {
+    presentation.navigate('prevSlide')
+}
+
 var keyHandlers = {
     32: onSpace,
     35: onEnd,
@@ -359,5 +368,13 @@ function onToggleNotes() {
         }, 1000)
     }
 }
+
+var touch = touchwipe(document.body, {
+    wipeLeft: onSwipeLeft,
+    wipeRight: onSwipeRight,
+    min_move_x: 20,
+    min_move_y: 20,
+    preventDefaultEvents: true
+});
 
 document.addEventListener('keydown', keydownHandler)
