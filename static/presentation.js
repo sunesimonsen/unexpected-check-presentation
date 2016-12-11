@@ -321,14 +321,6 @@ function onEnd() {
     presentation.navigate('showLastSlide')
 }
 
-function onSwipeLeft() {
-    presentation.navigate('nextSlide')
-}
-
-function onSwipeRight() {
-    presentation.navigate('prevSlide')
-}
-
 var keyHandlers = {
     32: onSpace,
     35: onEnd,
@@ -370,8 +362,10 @@ function onToggleNotes() {
 }
 
 var touch = touchwipe(document.body, {
-    wipeLeft: onSwipeLeft,
-    wipeRight: onSwipeRight,
+    wipeLeft: onArrowRight,
+    wipeRight: onArrowLeft,
+    wipeUp: onArrowUp,
+    wipeDown: onArrowDown,
     min_move_x: 20,
     min_move_y: 20,
     preventDefaultEvents: true
