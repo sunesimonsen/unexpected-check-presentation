@@ -238,13 +238,70 @@ section .code {
 }
 
 section .code {
-  background-color: #f7f7f7;
+    background-color: #f7f7f7;
 }
 section .output {
-  background-color: #f3f3f3;
+    background-color: #f3f3f3;
 }
 
 section .code + .output {
     border-top: thin solid #ddd;
     margin-top: -0.5em;
+}
+
+.arrow-up,
+.arrow-down,
+.arrow-left,
+.arrow-right {
+    padding: 0;
+    position: fixed;
+    opacity: 0.05;
+    width: 0;
+    height: 0;
+    background-color: transparent;
+    border: 10px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.arrow-up.enabled,
+.arrow-down.enabled,
+.arrow-left.enabled,
+.arrow-right.enabled {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.arrow-up.enabled:hover,
+.arrow-down.enabled:hover,
+.arrow-left.enabled:hover,
+.arrow-right.enabled:hover {
+    opacity: 1.0;
+}
+
+.arrow-up {
+    border-bottom-width: 18px;
+    border-bottom-color: #6450b3;
+    bottom: 49px;
+    right: 25px;
+}
+
+.arrow-down {
+    border-top-width: 18px;
+    border-top-color: #6450b3;
+    bottom: -5px;
+    right: 25px;
+}
+
+.arrow-left {
+    border-right-width: 18px;
+    border-right-color: #6450b3;
+    bottom: 25px;
+    right: 48px;
+}
+
+.arrow-right {
+    border-left-width: 18px;
+    border-left-color: #6450b3;
+    bottom: 25px;
+    right: -5px;
 }

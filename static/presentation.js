@@ -6,6 +6,22 @@ function toArray (items) {
 var container = document.querySelector('article')
 var slides = toArray(document.querySelectorAll('.slide'))
 
+var arrowUp = document.createElement('div')
+arrowUp.classList.add('arrow-up', 'enabled')
+document.body.appendChild(arrowUp)
+
+var arrowDown = document.createElement('div')
+arrowDown.classList.add('arrow-down', 'enabled')
+document.body.appendChild(arrowDown)
+
+var arrowLeft = document.createElement('div')
+arrowLeft.classList.add('arrow-left', 'enabled')
+document.body.appendChild(arrowLeft)
+
+var arrowRight = document.createElement('div')
+arrowRight.classList.add('arrow-right', 'enabled')
+document.body.appendChild(arrowRight)
+
 var notesWindow = null
 
 var backgrounds = {}
@@ -201,6 +217,19 @@ var presentation = {
         }
     },
 
+    updateArrows: function () {
+        var slide = this.position.slide
+        var section = this.position.section
+
+        arrowUp.classList.toggle('enabled', slide > 0)
+        arrowDown.classList.toggle(
+            'enabled',
+            slide < this.sections[section].length - 1
+        )
+        arrowLeft.classList.toggle('enabled', section > 0)
+        arrowRight.classList.toggle('enabled', section <  this.sections.length - 1)
+    },
+
     render: function (rerender) {
 
         if (
@@ -212,6 +241,7 @@ var presentation = {
 
             if (!rerender) {
                 this.renderNotes(slide)
+                this.updateArrows()
             }
 
             if (!rerender && slide.id in backgrounds) {
@@ -370,5 +400,10 @@ var touch = touchwipe(document.body, {
     min_move_y: 20,
     preventDefaultEvents: true
 });
+
+arrowUp.addEventListener('click', onArrowUp)
+arrowDown.addEventListener('click', onArrowDown)
+arrowLeft.addEventListener('click', onArrowLeft)
+arrowRight.addEventListener('click', onArrowRight)
 
 document.addEventListener('keydown', keydownHandler)
